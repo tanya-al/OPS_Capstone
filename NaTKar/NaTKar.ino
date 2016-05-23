@@ -7,10 +7,10 @@
 #define IN3 7
 #define IN4 8
 
-int suml = 0;
+int sumleft = 0;
 int sumr = 0;
 
-boolean isHigh(int val){ return val<-90; }
+boolean isHigh(int val){ return val<50; }
 //boolean RHigh(int val){ return val<0; }
 
 void setup() {
@@ -24,7 +24,7 @@ void setup() {
   pinMode(IN4, OUTPUT);
   pinMode(PCB_SIGNAL_L, INPUT);
   pinMode(PCB_SIGNAL_R, INPUT);
-  
+  delay(100);
   for(int i = 0; i < 1000; i++){
     sumr+=analogRead(PCB_SIGNAL_R);
     suml+=analogRead(PCB_SIGNAL_L);
@@ -51,19 +51,8 @@ void loop() {
   sr = map(sr, 0, 1024, 255, 0);
   sl = map(sl, 0, 1024, 255, 0);
 
-  Serial.print("SUM LEFT: ");
-  Serial.print(suml);
-  Serial.print(" SUM RIGHT: ");
-  Serial.println(sumr);
-
-  Serial.print("LEFT: ");
-  Serial.print(sl);
-  Serial.print(" RIGHT: ");
-  Serial.println(sr);
-
-  Serial.print(isHigh(sl));
-  Serial.print(" ");
-  Serial.println(isHigh(sr));
+//  Serial.print("LEFT: "); Serial.print(sl); Serial.print(" RIGHT: "); Serial.println(sr);
+//  Serial.print(isHigh(sl)); Serial.print(" "); Serial.println(isHigh(sr));
   
   delay(80);
 
