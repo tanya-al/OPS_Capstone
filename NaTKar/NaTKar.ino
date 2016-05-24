@@ -34,8 +34,7 @@ int sumr = 0;
   double ki; 
 
 boolean isHigh(int val){ return val<50; }
-//boolean RHigh(int val){ return val<0; }
-int acquireSensor(int pin);
+//int acquireSensor(int pin);
 void move();
 void moveStraight();
 void turnRight();
@@ -64,10 +63,19 @@ void setup() {
 
   kp = .25;
   time = 10;
+      digitalWrite(IN3, LOW);
+    digitalWrite(IN4, LOW);
+
+    analogWrite(PWM1, 255);
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, LOW);
+    delay(3000);
 }
 
 void loop() {
 
+//    turnRight();
+  moveStraight(); 
   // put your main code here, to run repeatedly:
   int sl = analogRead(PCB_SIGNAL_L);
   int sr = analogRead(PCB_SIGNAL_R);
@@ -75,32 +83,37 @@ void loop() {
   sr = map(sr, 0, 1024, 255, 0);
   sl = map(sl, 0, 1024, 255, 0);
 
-  Serial.print("LEFT: "); Serial.print(sl); Serial.print(" RIGHT: "); Serial.println(sr);
-  Serial.print(isHigh(sl)); Serial.print(" "); Serial.println(isHigh(sr));
+//  Serial.print("LEFT: "); Serial.print(sl); Serial.print(" RIGHT: "); Serial.println(sr);
 
   while(sl>95&&sr>95)
   {
     moveStraight();  // or should we call move()??
+    sl = analogRead(PCB_SIGNAL_L);
+    sr = analogRead(PCB_SIGNAL_R);
+  
+    sr = map(sr, 0, 1024, 255, 0);
+    sl = map(sl, 0, 1024, 255, 0);
+
+    delay(100);
   }
   
   stopMoving();
-  
-  delay(80);
-  
+    
   // decide which direction to move in
-  if (sl < sr)
+  if (sl < suml)
     turnLeft();
-  else if (sr < sl)
+  else if (sr < sumr)
     turnRight();
+//    move();
 }
 
-int acquireSensor(int pin){
-  int sum = 0;
-  for(int i = 0; i < 1000; i++){
-    sum+=analogRead(pin);
-  }
-  return sum/1000;
-}
+//int acquireSensor(int pin){
+//  int sum = 0;
+//  for(int i = 0; i < 1000; i++){
+//    sum+=analogRead(pin);
+//  }
+//  return sum/1000;
+//}
 
 void move(){
   rightRead = analogRead(PCB_SIGNAL_R);
@@ -135,9 +148,13 @@ void move(){
   
     
     // Set motor control signals
-    set motors to forward direction
-       set right PWM (rightSpeed)
-       set left PWM (leftSpeed)
+    analogWrite(PWM2, rightSpeed);
+    digitalWrite(IN3, HIGH);
+    digitalWrite(IN4, LOW);
+
+    analogWrite(PWM1, leftSpeed);
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
 
        // call function to determine which direction
 }
@@ -153,7 +170,7 @@ void stopMoving(){
     digitalWrite(IN2, HIGH);
 }
 
-void moveSraight()
+void moveStraight()
 {
   // add more checking stuff
     analogWrite(PWM2, 255);
@@ -176,7 +193,6 @@ void turnRight()
     // delay
     delay(80);
     // move straight again
-    moveStraight();
 }
 
 void turnLeft()
@@ -190,7 +206,6 @@ void turnLeft()
     // delay
     delay(80);
     // move straight again
-    moveStraight();  
 }
 
 // if one of the sensors reads below 95 then we are on the line = HIGH
