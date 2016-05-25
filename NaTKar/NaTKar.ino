@@ -3,9 +3,11 @@
 #define PWM1 3    // control the speed of the motors
 #define PWM2 4
 #define IN1 5   // control the motors
-#define IN2 6   //
+#define IN2 6   
 #define IN3 7
 #define IN4 8
+
+unsigned long timeCount;
 
 double suml = 0;    
 double sumr = 0;
@@ -28,18 +30,21 @@ double sumr = 0;
   double prevTotalError = 0;
   double totalError = 0;
   double tolerance = 0;
-  double defaultSpeed = 120;
+  double defaultSpeed = 250;
   double derivative = 0; 
   
 
   int time;
   double integral = 0;
-  double kp = 3;
-  double ki = 0; 
-  double kd = 0;
+  double kp = 4.5;
+  double ki = 0.1; 
+  double kd = 2.1;
 
-boolean isHigh(int val){ return val<50; }
-//int acquireSensor(int pin);
+  //edit: kp=2 ki=0.1 kd=1.75 is a good fallback
+  //edit (best): kp=1.85 ki=0.1 kd=1.75 is a good fallback (works when defaultSpeed=140)
+  //edit (best): kp=2.2 ki=0.1 kd=1.75 is a good fallback (works when defaultSpeed=200)
+  //edit (best): kp=4.5 ki=0.1 kd=2.1 is a good fallback (works when defaultSpeed=250)
+
 void move();
 void moveStraight();
 void turnRight();
@@ -47,7 +52,6 @@ void turnLeft();
 void stopMoving();
 
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(9600);
   pinMode(PWM1, OUTPUT);
   pinMode(PWM2, OUTPUT);
@@ -63,14 +67,8 @@ void setup() {
     suml+=analogRead(PCB_SIGNAL_L);
   }
 
-  sumr/=1000;
-  suml/=1000;
-
-  // is this right?? IDK
-
-  rightBaseline = sumr;
-  leftBaseline = suml;
-  //
+  rightBaseline = sumr/1000;
+  leftBaseline = suml/1000;
 
   time = 10;
     digitalWrite(IN3, LOW);
@@ -79,7 +77,9 @@ void setup() {
     analogWrite(PWM1, 255);
     digitalWrite(IN1, LOW);
     digitalWrite(IN2, LOW);
-    delay(3000);
+    delay(1200);
+
+    timeCount = millis();
 }
 
 void loop() {
@@ -90,19 +90,19 @@ void loop() {
   
   rightError = rightRead - rightBaseline;
   leftError = leftRead - leftBaseline;
-  Serial.println(rightError);
-  Serial.println(leftError);
 
-  rightError*=(255/1023);
-  leftError*=(255/1023);
+    Serial.println(rightError);
+    Serial.println(leftError);
+  
+  rightError*=((double)255)/1023;
+  leftError*=((double)255)/1023;
 
-  Serial.println(rightError);
-  Serial.println(leftError);
+    Serial.println(rightError);
+    Serial.println(leftError);
   
   totalError = leftError - rightError;
-  Serial.println("Error: ");
-  Serial.println(totalError);
-  
+    Serial.print("Error: ");
+    Serial.println(totalError);
   derivative = totalError - prevTotalError;
   integral = totalError + prevTotalError;
   prevTotalError = totalError;
@@ -122,6 +122,7 @@ void loop() {
     analogWrite(PWM1, leftSpeed);
     digitalWrite(IN1, HIGH);
     digitalWrite(IN2, LOW);
-  
+
+    timeCount=millis();
 }
 
