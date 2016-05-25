@@ -36,15 +36,14 @@ double sumr = 0;
 
   int time;
   double integral = 0;
-  double kp = 4.5;
+  double kp = 4.75;
   double ki = 0.1; 
-  double kd = 2.1;
+  double kd = 2.12;
 
   //edit: kp=2 ki=0.1 kd=1.75 is a good fallback
   //edit (best): kp=1.85 ki=0.1 kd=1.75 is a good fallback (works when defaultSpeed=140)
   //edit (best): kp=2.2 ki=0.1 kd=1.75 is a good fallback (works when defaultSpeed=200)
-  //edit (best): kp=4.5 ki=0.1 kd=2.1 is a good fallback (works when defaultSpeed=250)
-
+  //edit (best): kp=4.75 ki=0.1 kd=2.12 is a good fallback (works when defaultSpeed=250)
 void move();
 void moveStraight();
 void turnRight();
